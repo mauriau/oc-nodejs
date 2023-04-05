@@ -2,6 +2,9 @@ const express = require('express');
 
 const app = express();
 
+// can extract request
+app.use(express.json());
+
 // add CORS
 app.use((req, res, next) => {
     // Allow access to API
@@ -13,7 +16,15 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/stuff', (req, res, next) => {
+// POST request must be before get request, because get catch the request before post
+app.post('/api/stuff', (req, res, next) => {
+    console.log(req.body);
+    res.status(201).json({
+        message: 'Objet créé !'
+    });
+})
+
+app.get('/api/stuff', (req, res, next) => {
     const stuff = [
         {
             _id: 'oeihfzeoi',
