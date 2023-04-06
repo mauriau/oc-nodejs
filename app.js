@@ -2,9 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const app = express();
+const stuffRoutes = require('./routes/stuff');
 
-const Thing = require('./models/Thing');
-const Product = require('./models/Product');
 
 dotenv.config();
 
@@ -16,7 +15,7 @@ mongoose.connect('mongodb+srv://' + process.env.DB_USER +':'+ process.env.DB_PAS
 
 // can extract request
 app.use(express.json());
-
+app.use('/api/stuff', stuffRoutes);
 // add CORS
 app.use((req, res, next) => {
     // Allow access to API
@@ -27,95 +26,6 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
 });
-
-// POST request must be before get request, because get catch the request before post
-app.post('/api/stuff', (req, res, next) => {
-    delete req.body._id;
-    const thing = new Thing({
-        ...req.body
-    });
-    thing.save()
-        .then(() => res.status(201).json({
-            message: 'Objet enregistré !'
-        }))
-        .catch(error => res.status(400).json({error}))
-    ;
-})
-
-app.put('/api/stuff/:id', (req, res, next) => {
-    Thing.updateOne({
-        _id: req.params.id,
-
-    }, {...req.body, _id: req.params.id})
-        .then(thing => res.status(200).json({message: 'objet modifié'}))
-        .catch(error => res.status(400).json({error}));
-});
-
-app.delete('/api/stuff/:id', (req, res, next) => {
-    Thing.deleteOne({_id: req.params.id})
-    .then(() => res.status(200).json({message: 'objet supprimé !'}))
-    .catch(error => res.status(400).json({error}))
-})
-
-
-app.get('/api/stuff/:id', (req, res, next) => {
-    Thing.findOne({
-        _id: req.params.id
-    })
-    .then(thing => res.status(200).json(thing))
-    .catch(error => res.status(404).json({error}));
-})
-
-app.get('/api/stuff', (req, res, next) => {
-    Thing.find()
-        .then(things => res.status(200).json(things))
-        .catch(error => res.status(400).json({error}))
-});
-
-
-// POST request must be before get request, because get catch the request before post
-app.post('/api/products', (req, res, next) => {
-    const product = new Product({
-        ...req.body
-    });
-    product.save()
-        .then(() => res.status(201).json({product}))
-        .catch(error => res.status(400).json({error}))
-    ;
-})
-
-app.put('/api/products/:id', (req, res, next) => {
-    Product.updateOne({
-        _id: req.params.id,
-
-    }, {...req.body, _id: req.params.id})
-        .then(product => res.status(200).json({ message: 'Modified!' }))
-        .catch(error => res.status(400).json({error}));
-});
-
-app.delete('/api/products/:id', (req, res, next) => {
-    Product.deleteOne({_id: req.params.id})
-    .then(() => res.status(200).json({ message: 'Deleted!' }))
-    .catch(error => res.status(400).json({error}))
-})
-
-
-app.get('/api/products/:id', (req, res, next) => {
-    Product.findOne({
-        _id: req.params.id
-    })
-    .then((product) =>
-        res.status(200).json({product})
-    )
-    .catch(error => res.status(404).json({error}));
-})
-
-app.get('/api/products', (req, res, next) => {
-    Product.find()
-        .then(products => res.status(200).json({products}))
-        .catch(error => res.status(400).json({error}))
-});
-
 
 
 module.exports = app;
