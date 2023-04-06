@@ -1,9 +1,17 @@
 const express = require('express');
-
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const app = express();
 
+dotenv.config();
 // can extract request
 app.use(express.json());
+
+mongoose.connect('mongodb+srv://' + process.env.DB_USER +':'+ process.env.DB_PASSWORD + '@cluster0.tnvqqls.mongodb.net/?retryWrites=true&w=majority',
+    { useNewUrlParser: true,
+        useUnifiedTopology: true })
+    .then(() => console.log('Connexion à MongoDB réussie !'))
+    .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 // add CORS
 app.use((req, res, next) => {
