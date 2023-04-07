@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const app = express();
 const stuffRoutes = require('./routes/stuff');
-
+const userRoutes = require('./routes/user');
 
 dotenv.config();
 
@@ -16,6 +16,7 @@ mongoose.connect('mongodb+srv://' + process.env.DB_USER +':'+ process.env.DB_PAS
 // can extract request
 app.use(express.json());
 app.use('/api/stuff', stuffRoutes);
+app.use('/api/auth', userRoutes);
 // add CORS
 app.use((req, res, next) => {
     // Allow access to API
